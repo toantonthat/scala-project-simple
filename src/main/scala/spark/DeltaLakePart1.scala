@@ -7,8 +7,12 @@ import java.time.format.DateTimeFormatter
 
 object DeltaLakePart1 {
   def main(args: Array[String]) {
-    val spark = SparkSession.builder().appName("Spark Delta Lake Part 1").getOrCreate()
-    val paDF = spark.read.schema(SparkConstants.PASchema).parquet(SparkConstants.PAPath)
+    val spark = SparkSession.builder().appName("Spark Delta Lake Part 1")
+      .master("local")
+      .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
+      .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
+      .getOrCreate()
+    val paDF = spark.read.schema(SparkConstants.PASchema).parquet(SparkConstants.localPAPath)
     var paFilter = paDF;
     if (args.length > 0) {
       val score = args(0).toInt
@@ -35,15 +39,7 @@ object DeltaLakePart1 {
     val currentTimestamp = DateTimeFormatter.ofPattern("yyyyMMddHHmmss").format(LocalDateTime.now)
     val paName = s"post_answers_${currentTimestamp}"
 
-    // Start measuring time before writing parquet
-    val startTime = System.nanoTime()
-
-    paFilter.write.parquet(s"${SparkConstants.OutputPath}$paName")
-
-    // End measuring time after writing parquet
-    val endTime = System.nanoTime()
-    val duration = (endTime - startTime) / 1e9d  // convert to seconds
-    println(s"Time taken to write parquet: $duration seconds")
+    paFilter.write.format("delta").mode("append").save(s"${SparkConstants.localDeltaOutputPath}$paName")
 
     spark.stop()
   }
