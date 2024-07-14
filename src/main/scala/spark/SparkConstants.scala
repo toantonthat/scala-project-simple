@@ -58,4 +58,6 @@ object SparkConstants {
   ))
   val localOutputPath: String = s"$localRoot/output/"
   val OutputPath: String = s"$RootPath/output/"
+  val localDeltaOutputPath: String = s"$localRoot/output/delta/"
+  val DeltaOutputPath: String = s"$RootPath/output/delta/"
 }
