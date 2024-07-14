@@ -9,3 +9,9 @@ ví dụ tập a lấy id, title. tập b lấy body. tập c lấy asnwercount 
 Hiểu kiểu join bt và kiểu join broadcast (in memory) trong Spark
 
 (Tung Pham, Toan) Khi write parquet ra output, hiểu bản chất khi dùng 2 hàm: ``repartition()`` vs ``coalesce()`` 
+
+Delta Lake releases versions: https://docs.delta.io/latest/releases.html
+
+Delta Lake v3.2.0: https://github.com/delta-io/delta/releases/tag/v3.2.0
+
+
