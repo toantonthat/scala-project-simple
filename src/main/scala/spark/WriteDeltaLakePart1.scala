@@ -5,9 +5,9 @@ import org.apache.spark.sql.SparkSession
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-object DeltaLakePart1 {
+object WriteDeltaLakePart1 {
   def main(args: Array[String]) {
-    val spark = SparkSession.builder().appName("Spark Delta Lake Part 1")
+    val spark = SparkSession.builder().appName("Spark Write Delta Lake Part 1")
       .master("local")
       .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
       .config("spark.sql.catalog.spark_catalog", "org.apache.spark.sql.delta.catalog.DeltaCatalog")
@@ -29,17 +29,19 @@ object DeltaLakePart1 {
       }
     }
     if (args.length > 2) {
-      val coalesce = args(2).toInt
-      println("coalesce" + coalesce)
-      if (coalesce > 0) {
-        paFilter = paFilter.coalesce(coalesce)
+      val partition = args(2).toInt
+      println("partition" + partition)
+      if (partition > 0) {
+        paFilter = paFilter.repartition(partition)
       }
     }
+    paFilter = paFilter
+      .select(paFilter("id"), paFilter("title"), paFilter("body"), paFilter("owner_user_id"), paFilter("owner_display_name"))
 
-    val currentTimestamp = DateTimeFormatter.ofPattern("yyyyMMddHHmmss").format(LocalDateTime.now)
+    val currentTimestamp = DateTimeFormatter.ofPattern("yyyyMMdd").format(LocalDateTime.now)
     val paName = s"post_answers_${currentTimestamp}"
 
-    paFilter.write.format("delta").mode("append").save(s"${SparkConstants.localDeltaOutputPath}$paName")
+    paFilter.write.format("delta").mode("overwrite").save(s"${SparkConstants.localDeltaOutputPath}$paName")
 
     spark.stop()
   }
