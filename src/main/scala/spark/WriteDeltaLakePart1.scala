@@ -41,7 +41,7 @@ object WriteDeltaLakePart1 {
     val currentTimestamp = DateTimeFormatter.ofPattern("yyyyMMdd").format(LocalDateTime.now)
     val paName = s"post_answers_${currentTimestamp}"
 
-    paFilter.write.format("delta").mode("overwrite").save(s"${SparkConstants.localDeltaOutputPath}$paName")
+    paFilter.write.format("delta").mode("append").save(s"${SparkConstants.localDeltaOutputPath}$paName")
 
     spark.stop()
   }

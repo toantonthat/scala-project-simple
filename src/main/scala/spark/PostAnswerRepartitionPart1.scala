@@ -27,9 +27,7 @@ object PostAnswerRepartitionPart1 {
     if (args.length > 2) {
       val partition = args(2).toInt
       println("partition" + partition)
-      if (partition > 0) {
-        paFilter = paFilter.repartition(partition)
-      }
+
     }
 
     val currentTimestamp = DateTimeFormatter.ofPattern("yyyyMMddHHmmss").format(LocalDateTime.now)
